@@ -1,0 +1,58 @@
+{
+    "variables": {
+        "client_id": "d5xxxxx",
+        "client_secret": "",
+        "sensitive-variables": "client_secret",
+        "tenant_id": "d3xxxxxx",
+        "subscription_id": "997xxxxxxxxxx"
+    },
+    "builders": [
+        {
+            "type": "azure-arm",
+            "client_id": "{{user `client_id`}}",
+            "client_secret": "{{user `client_secret`}}",
+            "tenant_id": "{{user `tenant_id`}}",
+            "subscription_id": "{{user `subscription_id`}}",
+            "os_type": "Windows",
+            "image_publisher": "MicrosoftWindowsServer",
+            "image_offer": "WindowsServer",
+            "image_sku": "2019-Datacenter",
+            "image_version": "latest",
+            "managed_image_resource_group_name": "Bootcamp",
+            "managed_image_name": "ws2019-iis",
+            "disk_caching_type": "ReadWrite",
+            "communicator": "winrm",
+            "winrm_use_ssl": true,
+            "winrm_insecure": true,
+            "winrm_timeout": "20m",
+            "winrm_username": "packer",
+            "location": "West Europe",
+            "vm_size": "Standard_A2_v2",
+            "azure_tags": {
+                "dept": "IT"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "powershell",
+            "inline": [
+                "Write-Host 'Configuring IIS Role and sysprepping...'"
+            ]
+        },
+        {
+            "type": "powershell",
+            "script": "./scripts/iis-install.ps1"
+        },
+        {
+            "type": "windows-update"
+        },
+        {
+            "type": "windows-restart"
+        },
+        {
+            "type": "powershell",
+            "script": "./scripts/iis-sysprep.ps1"
+        }
+    ]
+}
